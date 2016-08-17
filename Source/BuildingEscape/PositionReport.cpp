@@ -21,7 +21,9 @@ void UPositionReport::BeginPlay() // method BeginPlay in class UPositionReport
 {
 	Super::BeginPlay(); // Super - do whatever happens up the inheritance tree - the actor component
 	FString ObjectName = GetOwner()->GetName(); // GetOwner returns pointer to an actor -> look through pointer to get to GetName method which returns an FString
-	UE_LOG(LogTemp, Warning, TEXT("Position Report on object %s"), *ObjectName); // %s is a format operator
+	//FString ObjectPos = GetOwner()->GetActorLocation().ToString();
+	FString ObjectPos = GetOwner()->GetTransform().GetLocation().ToString();
+	UE_LOG(LogTemp, Warning, TEXT("%s is at %s"), *ObjectName, *ObjectPos); // %s is a format operator
 	
 }
 
