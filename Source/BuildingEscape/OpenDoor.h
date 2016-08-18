@@ -19,18 +19,26 @@ public:
 	virtual void BeginPlay() override;
 
 	void OpenDoor();
-	
+	void CloseDoor();
+
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
 // no other class can set these values because it's private
 private:
-	UPROPERTY(VisibleAnywhere) // macro makes visible in the editor details panel
-	float OpenAngle = 90.0f;
+	//UPROPERTY(VisibleAnywhere) // macro makes visible in the editor details panel
+	UPROPERTY(EditAnywhere)
+	float OpenAngle = -90.0f;
 
 	UPROPERTY(EditAnywhere) // macro makes editable in the editor details panel
 	ATriggerVolume* PressurePlate; // pointer type of trigger volume // we call the pointer PressurePlate
 
+	UPROPERTY(EditAnywhere)
+	float DoorCloseDelay = 1.f;
+
+	float DoorLastOpenTime;
+
 	AActor* ActorThatOpens; // Pawn inherits from Actor
+	AActor* Owner; // The owning door
 	
 };
