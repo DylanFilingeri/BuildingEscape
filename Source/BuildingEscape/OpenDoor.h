@@ -17,6 +17,8 @@ public:
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	void OpenDoor();
 	
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
@@ -28,5 +30,7 @@ private:
 
 	UPROPERTY(EditAnywhere) // macro makes editable in the editor details panel
 	ATriggerVolume* PressurePlate; // pointer type of trigger volume // we call the pointer PressurePlate
+
+	AActor* ActorThatOpens; // Pawn inherits from Actor
 	
 };
