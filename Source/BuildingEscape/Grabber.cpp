@@ -22,20 +22,10 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FString Owner = GetOwner()->GetName();
-	UE_LOG(LogTemp, Warning, TEXT("%s is reporting for duty!"), *Owner);
+	Owner = GetOwner()->GetName();
 
-	/// PhysicsHandleComponent
-	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle)
-	{
-		// Physics handle is found
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("PhysicsHandleComponent is missing from %s"), *Owner);
-	}
-
+	FindPhysicsHandleComponent();
+	
 	/// InputComponent
 	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 	if (InputComponent)
@@ -49,6 +39,20 @@ void UGrabber::BeginPlay()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("InputComponent is missing from %s"), *Owner);
+	}
+}
+
+void UGrabber::FindPhysicsHandleComponent()
+{
+	/// PhysicsHandleComponent
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle)
+	{
+		// Physics handle is found
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PhysicsHandleComponent is missing from %s"), *Owner);
 	}
 }
 
