@@ -25,7 +25,41 @@ void UGrabber::BeginPlay()
 	FString Owner = GetOwner()->GetName();
 	UE_LOG(LogTemp, Warning, TEXT("%s is reporting for duty!"), *Owner);
 
-	
+	/// PhysicsHandleComponent
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (PhysicsHandle)
+	{
+		// Physics handle is found
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("PhysicsHandleComponent is missing from %s"), *Owner);
+	}
+
+	/// InputComponent
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent)
+	{
+		// InputComponent is found
+		//UE_LOG(LogTemp, Warning, TEXT("InputComponent is found from %s"), *Owner);
+
+		InputComponent->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab); // & is an address of operator
+		InputComponent->BindAction("Grab", IE_Released, this, &UGrabber::Release);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("InputComponent is missing from %s"), *Owner);
+	}
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Pressed!"));
+}
+
+void UGrabber::Release()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab Released!"));
 }
 
 
@@ -86,5 +120,6 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 		UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *(ActorHit->GetName())); // Pointer -> GetName // GetName returns an FString - have to put * to dereference it 
 	}
 }
+
 
 
