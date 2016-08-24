@@ -5,6 +5,7 @@
 #include "Components/ActorComponent.h"
 #include "OpenDoor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnOpenRequest);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
@@ -24,21 +25,30 @@ public:
 	// Called every frame
 	virtual void TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction ) override;
 
-// no other class can set these values because it's private
+	UPROPERTY(BlueprintAssignable)
+	FOnOpenRequest OnOpenRequest; // event handler of type FOnOpenRequest
+
+/// no other class can set these values because it's private
 private:
+	
 	//UPROPERTY(VisibleAnywhere) // macro makes visible in the editor details panel
 	UPROPERTY(EditAnywhere)
 	float OpenAngle = -90.0f;
 
 	UPROPERTY(EditAnywhere) // macro makes editable in the editor details panel
-	ATriggerVolume* PressurePlate; // pointer type of trigger volume // we call the pointer PressurePlate
+	ATriggerVolume* PressurePlate = nullptr; // pointer type of trigger volume // we call the pointer PressurePlate
 
 	UPROPERTY(EditAnywhere)
 	float DoorCloseDelay = 1.f;
 
+	UPROPERTY(EditAnywhere)
+	float MassRequiredToOpenDoor = 50.f;
+
 	float DoorLastOpenTime;
 
-	AActor* ActorThatOpens; // Pawn inherits from Actor
-	AActor* Owner; // The owning door
+	//AActor* ActorThatOpens; // Pawn inherits from Actor (DISABLED)
+	AActor* Owner = nullptr; // The owning door
+
+	float GetTotalMassOfActorsOnPlate();
 	
 };

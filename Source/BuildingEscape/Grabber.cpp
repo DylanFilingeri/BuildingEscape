@@ -70,15 +70,19 @@ void UGrabber::Grab()
 	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent(); // gets the mesh component in our case
 	AActor* ActorHit = HitResult.GetActor();
 
-	/// If we hit something, attatch a physics handle
-	if (ActorHit) // if (ActorHit != nullptr)
-	{ 
-		PhysicsHandle->GrabComponent(
-		ComponentToGrab,
-		NAME_None, // no bones needed
-		ComponentToGrab->GetOwner()->GetActorLocation(),
-		true // allow rotation
-		);
+	
+	if (PhysicsHandle) // can also use if (!PhysicsHandle){return;} to exit code
+	{
+		/// If we hit something, attatch a physics handle
+		if (ActorHit) // if (ActorHit != nullptr)
+		{
+			PhysicsHandle->GrabComponent(
+				ComponentToGrab,
+				NAME_None, // no bones needed
+				ComponentToGrab->GetOwner()->GetActorLocation(),
+				true // allow rotation
+			);
+		}
 	}
 }
 
@@ -87,7 +91,10 @@ void UGrabber::Release()
 	UE_LOG(LogTemp, Warning, TEXT("Grab Released!"));
 
 	// Release physics handle
-	PhysicsHandle->ReleaseComponent();
+	if (PhysicsHandle)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
 }
 
 /// Called every frame
@@ -95,15 +102,17 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	/// if the physics handle is attatched 
-	if (PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle) // if (!PhysicsHandle){return;}
 	{
-		FVector LineTraceEnd = GetReachLineEnd();
+		/// if the physics handle is attatched 
+		if (PhysicsHandle->GrabbedComponent)
+		{
+			FVector LineTraceEnd = GetReachLineEnd();
 
-		// move the object that we're holding
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+			// move the object that we're holding
+			PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		}
 	}
-	
 }
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()

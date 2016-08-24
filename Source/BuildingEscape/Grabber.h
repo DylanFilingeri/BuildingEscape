@@ -24,6 +24,7 @@ public:
 private:
 	FString Owner = "";
 
+	UPROPERTY(EditAnywhere)
 	float Reach = 100.f;
 
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
