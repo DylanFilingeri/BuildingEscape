@@ -37,4 +37,13 @@ private:
 	
 	// Called when grab is released
 	void Release();
+
+	// Setup (assumed) attatched input component
+	void SetupInputComponent();
+
+	// Return hit for first physics body in reach
+	const FHitResult GetFirstPhysicsBodyInReach();
+
+	// Return LineTraceEnd and get the target location
+	const FVector GetTargetLocation();
 };
