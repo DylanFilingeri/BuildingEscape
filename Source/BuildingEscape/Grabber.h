@@ -44,6 +44,11 @@ private:
 	// Return hit for first physics body in reach
 	const FHitResult GetFirstPhysicsBodyInReach();
 
+	// Return PlayerViewportLocation (start of linetrace)
+	FVector GetReachLineStart();
+
 	// Return LineTraceEnd and get the target location
-	const FVector GetTargetLocation();
+	FVector GetReachLineEnd();
+
+
 };

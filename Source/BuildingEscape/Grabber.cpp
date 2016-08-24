@@ -35,11 +35,7 @@ void UGrabber::FindPhysicsHandleComponent()
 {
 	/// PhysicsHandleComponent
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if (PhysicsHandle)
-	{
-		// Physics handle is found
-	}
-	else
+	if (PhysicsHandle == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("PhysicsHandleComponent is missing from %s"), *Owner);
 	}
@@ -71,7 +67,7 @@ void UGrabber::Grab()
 	/// Line trace and try to reach any actors with physics body collision channel set
 	// can use auto for each type
 	FHitResult HitResult = GetFirstPhysicsBodyInReach();
-	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent(); // gets the mesh component in our case
 	AActor* ActorHit = HitResult.GetActor();
 
 	/// If we hit something, attatch a physics handle
@@ -79,7 +75,7 @@ void UGrabber::Grab()
 	{ 
 		PhysicsHandle->GrabComponent(
 		ComponentToGrab,
-		NAME_None,
+		NAME_None, // no bones needed
 		ComponentToGrab->GetOwner()->GetActorLocation(),
 		true // allow rotation
 		);
@@ -102,16 +98,7 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 	/// if the physics handle is attatched 
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		/// Get playerviewpoint this tick
-		FVector PlayerViewPointLocation;
-		FRotator PlayerViewPointRotation;
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
-			OUT PlayerViewPointLocation,
-			OUT PlayerViewPointRotation
-		);
-
-		FVector LineTraceDirection = PlayerViewPointRotation.Vector();
-		FVector LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
+		FVector LineTraceEnd = GetReachLineEnd();
 
 		// move the object that we're holding
 		PhysicsHandle->SetTargetLocation(LineTraceEnd);
@@ -121,6 +108,8 @@ void UGrabber::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompon
 
 const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 {
+	/// CODE BEFORE REFACTOR TO GETREACHLINEEND/START
+	/* 
 	/// Get playerviewpoint this tick
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -130,14 +119,15 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	);
 
 	/// Log out PlayerViewPointLocation/Rotation to test (Disabled)
-	/*
+	
 	UE_LOG(LogTemp, Warning, TEXT("Location: %s , Rotation: %s"),
 	*PlayerViewPointLocation.ToString(),
 	*PlayerViewPointRotation.ToString()
-	);*/
+	);
 
 	FVector LineTraceDirection = PlayerViewPointRotation.Vector();
 	FVector LineTraceEnd = PlayerViewPointLocation + (LineTraceDirection * Reach);
+	*/
 
 	/// Draw Debug Line (Disabled)
 	/*
@@ -153,6 +143,9 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 	);
 	*/
 
+	FVector PlayerViewPointLocation = GetReachLineStart();
+	FVector LineTraceEnd = GetReachLineEnd();
+
 	/// Setup Query Parameters
 	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner()); // true/false whether complex collision, getowner to ignore collision
 
@@ -166,19 +159,39 @@ const FHitResult UGrabber::GetFirstPhysicsBodyInReach()
 		TraceParameters
 	);
 
-
-	/// See what we hit
+	/// SEE WHAT WE HIT MOVED TO GRAB FUNCTION
+	/* /// See what we hit
 	AActor* ActorHit = Hit.GetActor();
 	if (ActorHit)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hit Actor: %s"), *(ActorHit->GetName())); // Pointer -> GetName // GetName returns an FString - have to put * to dereference it 
 	}
+	*/
 
 	return Hit;
 }
 
-const FVector UGrabber::GetTargetLocation()
+FVector UGrabber::GetReachLineStart()
 {
-	return FVector();
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
+
+	return PlayerViewPointLocation;
+}
+
+FVector UGrabber::GetReachLineEnd()
+{
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
+
+	return PlayerViewPointLocation + (PlayerViewPointRotation.Vector() * Reach);
 }
 
