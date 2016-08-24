@@ -33,6 +33,8 @@ void UOpenDoor::BeginPlay()
 	}
 }
 
+///OPEN/CLOSE DOOR FUNCTIONS DISABLED
+/*
 void UOpenDoor::OpenDoor()
 {
 	// Set the door rotation (DISABLED)
@@ -44,9 +46,11 @@ void UOpenDoor::OpenDoor()
 void UOpenDoor::CloseDoor()
 {
 	// Set the door rotation (DISABLED)
-	Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
-}
+	//Owner->SetActorRotation(FRotator(0.f, 0.f, 0.f));
 
+	OnCloseRequest.Broadcast();
+}
+*/
 
 // Called every frame
 void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction )
@@ -66,14 +70,23 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 	
 	if (GetTotalMassOfActorsOnPlate() >= MassRequiredToOpenDoor) // TODO make magic number a var
 	{
-		OpenDoor();
-		DoorLastOpenTime = GetWorld()->GetTimeSeconds();
+		//OpenDoor();
+		//DoorLastOpenTime = GetWorld()->GetTimeSeconds();
+
+		OnOpenRequest.Broadcast();
+	}
+	else
+	{
+		OnCloseRequest.Broadcast();
 	}
 
+	/// DISABLED (if world time >= lastdooropentime+delay)
+	/* 
 	if ((GetWorld()->GetTimeSeconds()) >= (DoorLastOpenTime + DoorCloseDelay))
 	{
-		CloseDoor();
+		//CloseDoor();
 	}
+	*/
 }
 
 float UOpenDoor::GetTotalMassOfActorsOnPlate()
