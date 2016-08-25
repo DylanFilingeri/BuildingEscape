@@ -41,6 +41,9 @@ private:
 	UPROPERTY(EditAnywhere) // macro makes editable in the editor details panel
 	ATriggerVolume* PressurePlate = nullptr; // pointer type of trigger volume // we call the pointer PressurePlate
 
+	UPROPERTY(EditAnywhere)
+	AStaticMeshActor* StaticMesh = nullptr;
+
 	//UPROPERTY(EditAnywhere)
 	//float DoorCloseDelay = 0.f;
 

@@ -31,6 +31,10 @@ void UOpenDoor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s Is Missing a Pressure Plate!"), *GetOwner()->GetName());
 	}
+	if (!StaticMesh)
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s Is Missing a Static Mesh To Trigger Door!"), *GetOwner()->GetName());
+	}
 }
 
 ///OPEN/CLOSE DOOR FUNCTIONS DISABLED
@@ -57,7 +61,7 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 {
 	Super::TickComponent( DeltaTime, TickType, ThisTickFunction );
 
-	/// OLD CODE (PLayerController Pawn overlaps trigger to open door)
+	/// OLD CODE DISABLED (PLayerController Pawn overlaps trigger to open door)
 	/*
 	// Poll the trigger volume
 	// If the ActorThatOpens is in the volume
@@ -68,13 +72,22 @@ void UOpenDoor::TickComponent( float DeltaTime, ELevelTick TickType, FActorCompo
 	}
 	*/
 	
-	if (GetTotalMassOfActorsOnPlate() >= MassRequiredToOpenDoor) // TODO make magic number a var
+	if (!PressurePlate || !StaticMesh) { return; } // exit code if no static mesh or pressure plate
+
+	if (PressurePlate->IsOverlappingActor(StaticMesh))
+	{
+			OnOpenRequest.Broadcast();
+	}
+	/// (DISABLED) Open Door if total mass of actors on plate is greather than mass required to open door
+	/*
+	if (GetTotalMassOfActorsOnPlate() >= MassRequiredToOpenDoor) 
 	{
 		//OpenDoor();
 		//DoorLastOpenTime = GetWorld()->GetTimeSeconds();
 
 		OnOpenRequest.Broadcast();
-	}
+	}*/
+	
 	else
 	{
 		OnCloseRequest.Broadcast();
@@ -108,4 +121,3 @@ float UOpenDoor::GetTotalMassOfActorsOnPlate()
 
 	return TotalMass;
 }
-
